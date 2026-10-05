@@ -1,0 +1,6 @@
+{
+  "name": "SalonReview Rescue",
+  "description": "Turn every salon review into a professional public reply, private recovery message, and owner action plan in 30 seconds.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
