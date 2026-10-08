@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, LogOut, User, Store, ShieldCheck, Database } from 'lucide-react';
+import import { Sparkles, LogOut, User, Store, ShieldCheck } from 'lucide-react';
 import type { SalonProfile } from '../types/database';
 
 interface NavbarProps {
@@ -9,9 +9,8 @@ interface NavbarProps {
   onNavigate: (tab: 'landing' | 'dashboard' | 'new-review' | 'history' | 'setup') => void;
   onOpenAuth: (mode?: 'signin' | 'signup') => void;
   onSignOut: () => void;
-  onOpenSupabaseInfo: () => void;
-  isLiveSupabase: boolean;
-}
+ 
+
 
 export const Navbar: React.FC<NavbarProps> = ({
   user,
@@ -20,8 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   onOpenAuth,
   onSignOut,
-  onOpenSupabaseInfo,
-  isLiveSupabase,
+  
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#faf9f6]/90 backdrop-blur-md border-b border-[#e7e3dc]">
