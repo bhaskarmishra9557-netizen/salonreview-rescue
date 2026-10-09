@@ -22,7 +22,7 @@ import { Dashboard } from './components/Dashboard';
 import { NewReviewModal } from './components/NewReviewModal';
 import { ReviewHistory } from './components/ReviewHistory';
 import { UpgradeModal } from './components/UpgradeModal';
-import { SupabaseInfoModal } from './components/SupabaseInfoModal';
+
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -343,8 +343,8 @@ export default function App() {
         }}
         onOpenAuth={openAuth}
         onSignOut={handleSignOut}
-        onOpenSupabaseInfo={() => setIsSupabaseModalOpen(true)}
-        isLiveSupabase={isRealSupabaseConfigured}
+        
+       
       />
 
       {/* Main View Router */}
