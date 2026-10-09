@@ -1,5 +1,5 @@
 import React from 'react';
-import import { Sparkles, LogOut, User, Store, ShieldCheck } from 'lucide-react';
+ { Sparkles, LogOut, User, Store, ShieldCheck } from 'lucide-react';
 import type { SalonProfile } from '../types/database';
 
 interface NavbarProps {
@@ -9,7 +9,7 @@ interface NavbarProps {
   onNavigate: (tab: 'landing' | 'dashboard' | 'new-review' | 'history' | 'setup') => void;
   onOpenAuth: (mode?: 'signin' | 'signup') => void;
   onSignOut: () => void;
- 
+ }
 
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -40,15 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </button>
 
-          {/* Database status indicator button */}
-          <button
-            onClick={onOpenSupabaseInfo}
-            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-[#f0ece4] hover:bg-[#e7e1d5] text-[#5c544c] border border-[#ded8cc] transition-colors ml-2"
-            title="Click to view Supabase database details"
-          >
-            <Database className="w-3 h-3 text-[#3ecf8e]" />
-            <span>Supabase: {isLiveSupabase ? 'Connected' : 'Local Sandbox'}</span>
-          </button>
+         
         </div>
 
         {/* Zone 2: Navigation Links */}
