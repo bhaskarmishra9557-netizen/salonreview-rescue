@@ -1,5 +1,5 @@
 import React from 'react';
- { Sparkles, LogOut, User, Store, ShieldCheck } from 'lucide-react';
+import { Sparkles, LogOut, User, Store, ShieldCheck } from 'lucide-react';
 import type { SalonProfile } from '../types/database';
 
 interface NavbarProps {
