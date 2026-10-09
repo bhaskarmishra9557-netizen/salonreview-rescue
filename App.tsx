@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { supabase, isRealSupabaseConfigured } from './lib/supabase';
+import { supabase,  } from './lib/supabase';
 import type { 
   Profile, 
   SalonProfile, 
@@ -35,7 +35,7 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
-  const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
+  
 
   // Salon State
   const [salonProfile, setSalonProfile] = useState<SalonProfile | null>(null);
@@ -416,10 +416,7 @@ export default function App() {
         generationsCount={generationsThisMonth}
       />
 
-      {/* Supabase Schema & Secrets Info Modal */}
-      <SupabaseInfoModal
-        isOpen={isSupabaseModalOpen}
-        onClose={() => setIsSupabaseModalOpen(false)}
+     
       />
     </div>
   );
