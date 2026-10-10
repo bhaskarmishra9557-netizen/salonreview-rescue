@@ -2,14 +2,14 @@
 
 @layer base {
   :root {
-    --srr-ink: #11110f;
-    --srr-ink-soft: #26231f;
-    --srr-cream: #f5f1ea;
-    --srr-surface: #fbfaf7;
-    --srr-muted: #77716a;
-    --srr-line: #ddd7cf;
-    --srr-claret: #3F5A4A;
-   --srr-claret-soft: #DCE5DC;
+   --srr-ink: #171613;
+--srr-ink-soft: #2C2B27;
+--srr-cream: #F4EFE6;
+--srr-surface: #FCFAF6;
+--srr-muted: #6F6A62;
+--srr-line: #D9D1C6;
+--srr-claret: #3F5A4A;
+--srr-claret-soft: #DCE5DC;
   }
 
   html {
