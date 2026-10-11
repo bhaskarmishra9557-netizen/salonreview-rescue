@@ -167,7 +167,346 @@ async function userHasActiveProSubscription(
   }
 
   return Boolean(data && data.length > 0);
-}
+}// PayPal subscription activation endpoint
+app.post('/api/paypal/activate', async (req: Request, res: Response) => {
+  try {
+    const userId = await getAuthenticatedUserId(req);
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    if (!supabaseAdmin) {
+      res.status(500).json({
+        error: 'Supabase admin client is not configured.',
+      });
+      return;
+    }
+
+    const subscriptionId = String(
+      req.body?.subscriptionId || ''
+    ).trim();
+
+    if (!subscriptionId) {
+      res.status(400).json({
+        error: 'subscriptionId is required.',
+      });
+      return;
+    }
+
+    const { data: existingSubscription, error: existingError } =
+      await supabaseAdmin
+        .from('subscriptions')
+        .select('user_id')
+        .eq('paypal_subscription_id', subscriptionId)
+        .maybeSingle();
+
+    if (existingError) {
+      console.warn(
+        'Existing subscription lookup warning:',
+        existingError.message
+      );
+    }
+
+    if (
+      existingSubscription &&
+      existingSubscription.user_id !== userId
+    ) {
+      res.status(409).json({
+        error:
+          'This PayPal subscription is already linked to another account.',
+      });
+      return;
+    }
+
+    const subscription = await paypalRequest(
+      `/v1/billing/subscriptions/${encodeURIComponent(
+        subscriptionId
+      )}`,
+      { method: 'GET' }
+    );
+
+    if (subscription?.plan_id !== PAYPAL_PLAN_ID) {
+      res.status(400).json({
+        error:
+          'The PayPal subscription is not for the SalonReview Rescue Pro plan.',
+      });
+      return;
+    }
+
+    if (subscription?.status !== 'ACTIVE') {
+      res.status(400).json({
+        error:
+          `PayPal subscription is not active. Current status: ${
+            subscription?.status || 'UNKNOWN'
+          }`,
+      });
+      return;
+    }
+
+    const { error: upsertError } = await supabaseAdmin
+      .from('subscriptions')
+      .upsert(
+        {
+          user_id: userId,
+          paypal_subscription_id: subscriptionId,
+          status: 'ACTIVE',
+          plan: 'pro',
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'paypal_subscription_id',
+        }
+      );
+
+    if (upsertError) {
+      console.error(
+        'Subscription upsert error:',
+        upsertError
+      );
+
+      res.status(500).json({
+        error: 'Unable to activate Pro access.',
+      });
+
+      return;
+    }
+
+    res.json({
+      success: true,
+      isPro: true,
+      plan: 'pro',
+    });
+  } catch (err: any) {
+    console.error(
+      'PayPal activation error:',
+      err
+    );
+
+    res.status(500).json({
+      error:
+        err?.message ||
+        'Unable to verify the PayPal subscription.',
+    });
+  }
+});
+
+// Current billing status for the signed-in user
+app.get('/api/billing/status', async (req: Request, res: Response) => {
+  try {
+    const userId =
+      await getAuthenticatedUserId(req);
+
+    if (!userId) {
+      res.status(401).json({
+        error: 'Unauthorized',
+      });
+      return;
+    }
+
+    const isPro =
+      await userHasActiveProSubscription(userId);
+
+    res.json({
+      isPro,
+      plan: isPro ? 'pro' : 'free',
+    });
+  } catch (err: any) {
+    console.error(
+      'Billing status error:',
+      err
+    );
+
+    res.status(500).json({
+      error: 'Unable to load billing status.',
+    });
+  }
+});
+
+// PayPal webhook endpoint
+app.post('/api/paypal/webhook', async (req: Request, res: Response) => {
+  try {
+    const webhookId =
+      process.env.PAYPAL_WEBHOOK_ID;
+
+    if (!webhookId) {
+      res.status(500).json({
+        error: 'PayPal webhook is not configured.',
+      });
+      return;
+    }
+
+    const verificationPayload = {
+      transmission_id: String(
+        req.headers['paypal-transmission-id'] || ''
+      ),
+      transmission_time: String(
+        req.headers['paypal-transmission-time'] || ''
+      ),
+      cert_url: String(
+        req.headers['paypal-cert-url'] || ''
+      ),
+      auth_algo: String(
+        req.headers['paypal-auth-algo'] || ''
+      ),
+      transmission_sig: String(
+        req.headers['paypal-transmission-sig'] || ''
+      ),
+      webhook_id: webhookId,
+      webhook_event: req.body,
+    };
+
+    const verification =
+      await paypalRequest(
+        '/v1/notifications/verify-webhook-signature',
+        {
+          method: 'POST',
+          body: JSON.stringify(
+            verificationPayload
+          ),
+        }
+      );
+
+    if (
+      verification?.verification_status !==
+      'SUCCESS'
+    ) {
+      res.status(400).json({
+        error:
+          'Invalid PayPal webhook signature.',
+      });
+      return;
+    }
+
+    if (!supabaseAdmin) {
+      res.status(500).json({
+        error:
+          'Supabase admin client is not configured.',
+      });
+      return;
+    }
+
+    const eventType =
+      String(req.body?.event_type || '');
+
+    const subscriptionId =
+      String(
+        req.body?.resource?.id ||
+        req.body?.resource
+          ?.billing_agreement_id ||
+        ''
+      ).trim();
+
+    const supportedEvents = new Set([
+      'BILLING.SUBSCRIPTION.ACTIVATED',
+      'BILLING.SUBSCRIPTION.UPDATED',
+      'BILLING.SUBSCRIPTION.EXPIRED',
+      'BILLING.SUBSCRIPTION.CANCELLED',
+      'BILLING.SUBSCRIPTION.SUSPENDED',
+      'BILLING.SUBSCRIPTION.PAYMENT.FAILED',
+    ]);
+
+    if (
+      subscriptionId &&
+      supportedEvents.has(eventType)
+    ) {
+      let status = String(
+        req.body?.resource?.status || ''
+      ).toUpperCase();
+
+      if (
+        eventType ===
+        'BILLING.SUBSCRIPTION.CANCELLED'
+      ) {
+        status = 'CANCELLED';
+      }
+
+      if (
+        eventType ===
+        'BILLING.SUBSCRIPTION.EXPIRED'
+      ) {
+        status = 'EXPIRED';
+      }
+
+      if (
+        eventType ===
+        'BILLING.SUBSCRIPTION.SUSPENDED'
+      ) {
+        status = 'SUSPENDED';
+      }
+
+      if (
+        eventType ===
+          'BILLING.SUBSCRIPTION.PAYMENT.FAILED' &&
+        !status
+      ) {
+        try {
+          const latest =
+            await paypalRequest(
+              `/v1/billing/subscriptions/${encodeURIComponent(
+                subscriptionId
+              )}`,
+              {
+                method: 'GET',
+              }
+            );
+
+          status = String(
+            latest?.status || ''
+          ).toUpperCase();
+        } catch (lookupErr) {
+          console.warn(
+            'Unable to refresh subscription status after payment failure:',
+            lookupErr
+          );
+        }
+      }
+
+      if (status) {
+        const { error: updateError } =
+          await supabaseAdmin
+            .from('subscriptions')
+            .update({
+              status,
+              updated_at:
+                new Date().toISOString(),
+            })
+            .eq(
+              'paypal_subscription_id',
+              subscriptionId
+            );
+
+        if (updateError) {
+          console.error(
+            'Webhook subscription update error:',
+            updateError
+          );
+
+          res.status(500).json({
+            error:
+              'Unable to update subscription status.',
+          });
+
+          return;
+        }
+      }
+    }
+
+    res.status(200).json({
+      received: true,
+    });
+  } catch (err: any) {
+    console.error(
+      'PayPal webhook error:',
+      err
+    );
+
+    res.status(500).json({
+      error: 'Webhook processing failed.',
+    });
+  }
+});
 // Health check endpoint for Supabase connection verification
 app.get('/api/supabase-health', async (_req: Request, res: Response) => {
   if (!supabaseAdmin) {
