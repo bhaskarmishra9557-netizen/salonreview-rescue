@@ -447,8 +447,16 @@ if (
     }
   }
 }
-    const authHeader = req.headers.authorization;
-    if (supabaseAdmin && authHeader && authHeader.startsWith('Bearer ')) {
+    if (currentCount >= 10) {
+  res.status(403).json({
+    error: "You've used all 10 free reviews this month.",
+    upgradePrompt: "Upgrade to Pro — $9/month",
+    limitReached: true,
+    usedCount: currentCount,
+    maxLimit: 10,
+  });
+  return;
+}
       const token = authHeader.replace('Bearer ', '').trim();
       const { data: userData, error: userAuthErr } = await supabaseAdmin.auth.getUser(token);
 
