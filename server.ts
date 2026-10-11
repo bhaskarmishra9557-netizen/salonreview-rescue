@@ -46,6 +46,128 @@ if (supabaseUrl && serviceRoleKey) {
   });
 }
 
+// PayPal configuration
+const PAYPAL_BASE_URL =
+  process.env.PAYPAL_ENV === 'sandbox'
+    ? 'https://api-m.sandbox.paypal.com'
+    : 'https://api-m.paypal.com';
+
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
+const PAYPAL_PLAN_ID =
+  process.env.PAYPAL_PLAN_ID || 'P-6YY835575F003903YNLFJKAY';
+
+async function getPayPalAccessToken(): Promise<string> {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    throw new Error('PayPal credentials are not configured.');
+  }
+
+  const auth = Buffer.from(
+    `${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`
+  ).toString('base64');
+
+  const response = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${auth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || !data.access_token) {
+    throw new Error(
+      data.error_description ||
+        data.message ||
+        'Unable to authenticate with PayPal.'
+    );
+  }
+
+  return data.access_token;
+}
+
+async function paypalRequest(
+  pathname: string,
+  init: RequestInit = {}
+): Promise<any> {
+  const accessToken = await getPayPalAccessToken();
+
+  const headers = new Headers(init.headers || {});
+  headers.set('Authorization', `Bearer ${accessToken}`);
+  headers.set('Content-Type', 'application/json');
+
+  const response = await fetch(`${PAYPAL_BASE_URL}${pathname}`, {
+    ...init,
+    headers,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message =
+      data?.details
+        ?.map((d: any) => d.description)
+        .filter(Boolean)
+        .join('; ') ||
+      data?.message ||
+      'PayPal API request failed.';
+
+    throw new Error(message);
+  }
+
+  return data;
+}
+
+async function getAuthenticatedUserId(
+  req: Request
+): Promise<string | null> {
+  if (!supabaseAdmin) return null;
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.replace('Bearer ', '').trim();
+
+  if (!token) return null;
+
+  const { data, error } =
+    await supabaseAdmin.auth.getUser(token);
+
+  if (error || !data?.user) {
+    return null;
+  }
+
+  return data.user.id;
+}
+
+async function userHasActiveProSubscription(
+  userId: string
+): Promise<boolean> {
+  if (!supabaseAdmin) return false;
+
+  const { data, error } = await supabaseAdmin
+    .from('subscriptions')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('plan', 'pro')
+    .eq('status', 'ACTIVE')
+    .limit(1);
+
+  if (error) {
+    console.warn(
+      'Subscription status query warning:',
+      error.message
+    );
+    return false;
+  }
+
+  return Boolean(data && data.length > 0);
+}
 // Health check endpoint for Supabase connection verification
 app.get('/api/supabase-health', async (_req: Request, res: Response) => {
   if (!supabaseAdmin) {
