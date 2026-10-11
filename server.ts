@@ -361,7 +361,92 @@ app.post('/api/generate-response', async (req: Request, res: Response) => {
       return;
     }
 
-    // 1. Verify authenticated user and enforce calendar month usage limit (10 free reviews)
+   // Verify authenticated user and enforce the 10-review limit
+// only for free users. Active Pro users are unlimited.
+const authHeader = req.headers.authorization;
+
+if (
+  supabaseAdmin &&
+  authHeader &&
+  authHeader.startsWith('Bearer ')
+) {
+  const token = authHeader
+    .replace('Bearer ', '')
+    .trim();
+
+  const { data: userData, error: userAuthErr } =
+    await supabaseAdmin.auth.getUser(token);
+
+  if (userAuthErr || !userData?.user) {
+    res.status(401).json({
+      error:
+        'Invalid or expired user session. Please sign in again.',
+    });
+    return;
+  }
+
+  const verifiedUserId = userData.user.id;
+
+  const isPro =
+    await userHasActiveProSubscription(
+      verifiedUserId
+    );
+
+  if (!isPro) {
+    const now = new Date();
+
+    const startOfCurrentMonth =
+      new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          1
+        )
+      ).toISOString();
+
+    const { data: usageEvents, error: usageErr } =
+      await supabaseAdmin
+        .from('usage_events')
+        .select('id')
+        .eq(
+          'user_id',
+          verifiedUserId
+        )
+        .eq(
+          'event_type',
+          'review_generation'
+        )
+        .gte(
+          'created_at',
+          startOfCurrentMonth
+        );
+
+    if (usageErr) {
+      console.warn(
+        'Usage query warning:',
+        usageErr.message
+      );
+    }
+
+    const currentCount =
+      usageEvents
+        ? usageEvents.length
+        : 0;
+
+    if (currentCount >= 10) {
+      res.status(403).json({
+        error:
+          "You've used all 10 free reviews this month.",
+        upgradePrompt:
+          'Upgrade to Pro — $9/month',
+        limitReached: true,
+        usedCount: currentCount,
+        maxLimit: 10,
+      });
+      return;
+    }
+  }
+}
     const authHeader = req.headers.authorization;
     if (supabaseAdmin && authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.replace('Bearer ', '').trim();
