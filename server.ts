@@ -447,53 +447,7 @@ if (
     }
   }
 }
-    if (currentCount >= 10) {
-  res.status(403).json({
-    error: "You've used all 10 free reviews this month.",
-    upgradePrompt: "Upgrade to Pro — $9/month",
-    limitReached: true,
-    usedCount: currentCount,
-    maxLimit: 10,
-  });
-  return;
-}
-      const token = authHeader.replace('Bearer ', '').trim();
-      const { data: userData, error: userAuthErr } = await supabaseAdmin.auth.getUser(token);
-
-      if (userAuthErr || !userData?.user) {
-        res.status(401).json({ error: 'Invalid or expired user session. Please sign in again.' });
-        return;
-      }
-
-      const verifiedUserId = userData.user.id;
-
-      // Count user's review_generation events for the current calendar month
-      const now = new Date();
-      const startOfCurrentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
-
-      const { data: usageEvents, error: usageErr } = await supabaseAdmin
-        .from('usage_events')
-        .select('id')
-        .eq('user_id', verifiedUserId)
-        .eq('event_type', 'review_generation')
-        .gte('created_at', startOfCurrentMonth);
-
-      if (usageErr) {
-        console.warn('Warning querying usage events on server:', usageErr);
-      }
-
-      const currentCount = usageEvents ? usageEvents.length : 0;
-      if (currentCount >= 10) {
-        res.status(403).json({
-          error: "You've used all 10 free reviews this month.",
-          upgradePrompt: "Upgrade to Pro — $9/month",
-          limitReached: true,
-          usedCount: currentCount,
-          maxLimit: 10,
-        });
-        return;
-      }
-    }
+    
 
     const lowerReview = review_text.toLowerCase();
     const escalationKeywords = [
