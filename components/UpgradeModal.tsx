@@ -15,7 +15,7 @@ interface UpgradeModalProps {
 }
 
 const PAYPAL_CLIENT_ID =
-  'YOUR_SANDBOX_CLIENT_ID';
+  'AWHJBFNGB0lkS-dv7xktpuwewz749eoLMth5oM6Nx7Y2jgsU6SVzcBht5Cn8PdVmKAx_W_XSibZXNsVn';
 
 const PAYPAL_PLAN_ID = 'P-5VP88354T58055229NLH4LUA';
 
