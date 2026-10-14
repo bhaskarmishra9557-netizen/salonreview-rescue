@@ -15,9 +15,9 @@ interface UpgradeModalProps {
 }
 
 const PAYPAL_CLIENT_ID =
-  'BAAN7xc1IXNJCujf5z5s4g92skCzWkizsPC-KSOumBmH3CMjr1TzpXggkLEsal9P_UO0XdqtVm9KppLrfM';
+  'YOUR_SANDBOX_CLIENT_ID';
 
-const PAYPAL_PLAN_ID = 'P-6YY835575F003903YNLFJKAY';
+const PAYPAL_PLAN_ID = 'P-5VP88354T58055229NLH4LUA';
 
 export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   isOpen,
