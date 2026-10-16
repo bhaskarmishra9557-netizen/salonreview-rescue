@@ -20,7 +20,7 @@ const PAYPAL_CLIENT_ID =
 const PAYPAL_PLAN_ID =
   'P-5VP88354T58055229NLH4LUA';
 
-BAAE_JsPUmrX-uG39pUOU1L51iTS5dGpBzmui4_wezK81QnxyupnuOw0pHAjtZgfLz1x0c0uMXmH8ONVNg
+
 
 export const UpgradeModal: React.FC<UpgradeModalProps> = ({
   isOpen,
