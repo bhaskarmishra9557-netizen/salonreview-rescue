@@ -309,8 +309,11 @@ export const NewReviewModal: React.FC<NewReviewModalProps> = ({
               <button
                 type="button"
                 onClick={onOpenUpgradeModal}
-                className="w-full py-2.5 px-4 bg-[#2c2724] hover:bg-[#1a1715] text-white text-xs font-semibold rounded-md transition-colors shadow-sm"
-              >
+                <div className="text-xs text-[#736a60]">
+  {isPro
+    ? 'Pro plan — unlimited monthly review generations'
+    : 'Monthly limit resets automatically next calendar month'}
+</div>
                 Upgrade to Pro — $9/month
               </button>
             </div>
