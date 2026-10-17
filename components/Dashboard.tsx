@@ -22,6 +22,7 @@ interface DashboardProps {
   reviewsWithResponses: ReviewWithResponse[];
   generationsThisMonth: number;
   maxFreeGenerations: number;
+  isPro: boolean;
   onNavigateToNewReview: () => void;
   onNavigateToHistory: () => void;
   onOpenUpgradeModal: () => void;
