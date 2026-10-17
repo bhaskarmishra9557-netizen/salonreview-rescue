@@ -40,8 +40,9 @@ export default function App() {
   // Salon State
   const [salonProfile, setSalonProfile] = useState<SalonProfile | null>(null);
   const [reviewsWithResponses, setReviewsWithResponses] = useState<ReviewWithResponse[]>([]);
-  const [generationsThisMonth, setGenerationsThisMonth] = useState<number>(0);
-  const MAX_FREE_GENERATIONS = 10;
+ const [generationsThisMonth, setGenerationsThisMonth] = useState<number>(0);
+const [isPro, setIsPro] = useState<boolean>(false);
+const MAX_FREE_GENERATIONS = 10;
 
   // Initialize Auth
   useEffect(() => {
