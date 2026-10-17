@@ -201,11 +201,11 @@ const MAX_FREE_GENERATIONS = 10;
       console.warn('Usage check warning:', usageCheckErr);
     }
 
-    const currentUsageCount = (currentMonthEvents || []).filter(
-      e => e.event_type === 'review_generation' || e.event_type === 'generate_response'
-    ).length;
+ const currentUsageCount = (currentMonthEvents || []).filter(
+  e => e.event_type === 'review_generation'
+).length;
 
-    if (currentUsageCount >= MAX_FREE_GENERATIONS) {
+if (!isPro && currentUsageCount >= MAX_FREE_GENERATIONS) {
       setIsUpgradeModalOpen(true);
       throw new Error("You've used all 10 free reviews this month.");
     }
