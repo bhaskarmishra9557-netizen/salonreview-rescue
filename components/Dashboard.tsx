@@ -34,6 +34,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   reviewsWithResponses,
   generationsThisMonth,
   maxFreeGenerations,
+    isPro,
   onNavigateToNewReview,
   onNavigateToHistory,
   onOpenUpgradeModal,
