@@ -302,9 +302,9 @@ if (!isPro && currentUsageCount >= MAX_FREE_GENERATIONS) {
       .eq('user_id', currentUser.id)
       .gte('created_at', startOfCurrentMonth);
 
-    const updatedUsageCount = (freshUsage || []).filter(
-      e => e.event_type === 'review_generation' || e.event_type === 'generate_response'
-    ).length;
+ const updatedUsageCount = (freshUsage || []).filter(
+  e => e.event_type === 'review_generation'
+).length;
 
     // Refresh dashboard statistics immediately
     setReviewsWithResponses(prev => [
