@@ -318,9 +318,10 @@ if (!isPro && currentUsageCount >= MAX_FREE_GENERATIONS) {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setCurrentUser(null);
-    setSalonProfile(null);
-    setActiveTab('landing');
+   setCurrentUser(null);
+setSalonProfile(null);
+setIsPro(false);
+setActiveTab('landing');
   };
 
   const openAuth = (mode: 'signin' | 'signup' = 'signin') => {
