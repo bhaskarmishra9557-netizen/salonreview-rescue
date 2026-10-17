@@ -96,7 +96,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       {/* Usage Limit Banner (If used up or nearing) */}
-      {isLimitReached ? (
+      {!isPro && isLimitReached ? (
         <div className="rounded-xl border-2 border-[#b07b39] bg-[#fffaf2] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-lg bg-[#b07b39]/15 text-[#915f20] flex items-center justify-center shrink-0">
