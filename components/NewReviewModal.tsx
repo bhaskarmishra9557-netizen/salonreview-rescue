@@ -267,7 +267,7 @@ export const NewReviewModal: React.FC<NewReviewModalProps> = ({
             ? 'text-[#c2411f]'
             : 'text-[#2d7a4d]'
         }`}>
-         
+         Remaining: {remainingGenerations}
         </span>
       </div>
 
