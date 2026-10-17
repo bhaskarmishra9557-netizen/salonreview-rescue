@@ -401,9 +401,10 @@ isPro={isPro}
         )}
 
         {activeTab === 'new-review' && currentUser && salonProfile && (
-          <NewReviewModal
-            salonProfile={salonProfile}
-            remainingGenerations={Math.max(0, MAX_FREE_GENERATIONS - generationsThisMonth)}
+       <NewReviewModal
+  salonProfile={salonProfile}
+  isPro={isPro}
+  remainingGenerations={Math.max(0, MAX_FREE_GENERATIONS - generationsThisMonth)}
             onProcessReview={handleProcessNewReview}
             onBackToDashboard={() => setActiveTab('dashboard')}
             onOpenUpgradeModal={() => setIsUpgradeModalOpen(true)}
