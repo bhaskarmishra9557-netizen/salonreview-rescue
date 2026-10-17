@@ -18,6 +18,7 @@ import type { SalonProfile, GenerationResult, Review, GeneratedResponse } from '
 
 interface NewReviewModalProps {
   salonProfile: SalonProfile;
+  isPro: boolean;
   remainingGenerations: number;
   onProcessReview: (data: {
     review_text: string;
