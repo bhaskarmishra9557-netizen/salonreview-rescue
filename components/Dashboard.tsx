@@ -244,8 +244,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </button>
             )}
           </div>
-        </div>
+                </div>
       </div>
+    )}
 
       {/* Recent Reviews Section */}
       <div className="bg-white rounded-xl border border-[#ded8cc] overflow-hidden shadow-xs">
