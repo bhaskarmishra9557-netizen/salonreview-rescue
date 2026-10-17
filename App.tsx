@@ -390,8 +390,9 @@ if (!isPro && currentUsageCount >= MAX_FREE_GENERATIONS) {
           <Dashboard
             salonProfile={salonProfile}
             reviewsWithResponses={reviewsWithResponses}
-            generationsThisMonth={generationsThisMonth}
-            maxFreeGenerations={MAX_FREE_GENERATIONS}
+           generationsThisMonth={generationsThisMonth}
+maxFreeGenerations={MAX_FREE_GENERATIONS}
+isPro={isPro}
             onNavigateToNewReview={() => setActiveTab('new-review')}
             onNavigateToHistory={() => setActiveTab('history')}
             onOpenUpgradeModal={() => setIsUpgradeModalOpen(true)}
