@@ -320,6 +320,8 @@ if (!isPro && currentUsageCount >= MAX_FREE_GENERATIONS) {
     await supabase.auth.signOut();
    setCurrentUser(null);
 setSalonProfile(null);
+setReviewsWithResponses([]);
+setGenerationsThisMonth(0);
 setIsPro(false);
 setActiveTab('landing');
   };
