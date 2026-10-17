@@ -99,9 +99,10 @@ export const NewReviewModal: React.FC<NewReviewModalProps> = ({
       return;
     }
 
-    if (remainingGenerations <= 0) {
-      onOpenUpgradeModal();
-      return;
+   if (!isPro && remainingGenerations <= 0) {
+  onOpenUpgradeModal();
+  return;
+}
     }
 
     setErrorMsg(null);
