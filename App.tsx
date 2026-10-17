@@ -142,9 +142,9 @@ const MAX_FREE_GENERATIONS = 10;
         .eq('user_id', userId)
         .gte('created_at', startOfCurrentMonth);
 
-      const currentMonthCount = (usageData || []).filter(
-        u => u.event_type === 'review_generation' || u.event_type === 'generate_response'
-      ).length;
+    const currentMonthCount = (usageData || []).filter(
+  u => u.event_type === 'review_generation'
+).length;
 
       // Combine Reviews with Responses
       const combined: ReviewWithResponse[] = [];
