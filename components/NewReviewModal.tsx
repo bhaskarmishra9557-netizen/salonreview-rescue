@@ -103,7 +103,7 @@ export const NewReviewModal: React.FC<NewReviewModalProps> = ({
   onOpenUpgradeModal();
   return;
 }
-    }
+    
 
     setErrorMsg(null);
     setLoading(true);
