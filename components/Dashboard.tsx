@@ -192,7 +192,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Metric 4: Monthly Usage & Progress */}
-        <div className="bg-white rounded-lg border border-[#ded8cc] p-5 flex flex-col justify-between">
+       {!isPro && (
+  <div className="bg-white rounded-lg border border-[#ded8cc] p-5 flex flex-col justify-between">
           <div>
             <div className="text-xs font-medium text-[#736a60] uppercase tracking-wider flex items-center justify-between">
               <span>Monthly Usage</span>
