@@ -243,8 +243,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Upgrade to Pro
               </button>
             )}
-          </div>
-    )}
+                      </div>
+        </div>
+      )}
       </div>
 
       {/* Recent Reviews Section */}
