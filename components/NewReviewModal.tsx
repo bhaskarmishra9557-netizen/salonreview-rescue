@@ -31,6 +31,7 @@ interface NewReviewModalProps {
 
 export const NewReviewModal: React.FC<NewReviewModalProps> = ({
   salonProfile,
+  isPro,
   remainingGenerations,
   onProcessReview,
   onBackToDashboard,
