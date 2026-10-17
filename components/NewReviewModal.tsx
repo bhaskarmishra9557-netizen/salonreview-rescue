@@ -245,29 +245,52 @@ export const NewReviewModal: React.FC<NewReviewModalProps> = ({
             />
           </div>
 
-          {/* Monthly Usage & Progress Indicator */}
-          <div className="p-4 rounded-lg bg-[#faf8f4] border border-[#e8e2d8] space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-[#423b36]">
-                Used: {10 - remainingGenerations} / 10
-              </span>
-              <span className={`font-semibold ${remainingGenerations === 0 ? 'text-[#c2411f]' : 'text-[#2d7a4d]'}`}>
-                Remaining: {remainingGenerations}
-              </span>
-            </div>
-            <div className="w-full bg-[#ede8df] rounded-full h-2 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-300 ${
-                  remainingGenerations === 0
-                    ? 'bg-[#c2411f]'
-                    : remainingGenerations <= 3
-                    ? 'bg-[#d48b28]'
-                    : 'bg-[#2c2724]'
-                }`}
-                style={{ width: `${Math.min(100, ((10 - remainingGenerations) / 10) * 100)}%` }}
-              />
-            </div>
-          </div>
+         {/* Monthly Usage & Progress Indicator */}
+<div className="p-4 rounded-lg bg-[#faf8f4] border border-[#e8e2d8] space-y-2">
+  {isPro ? (
+    <div className="flex items-center justify-between text-xs">
+      <span className="font-semibold text-[#423b36]">
+        Pro plan
+      </span>
+      <span className="font-semibold text-[#2d7a4d]">
+        Unlimited reviews
+      </span>
+    </div>
+  ) : (
+    <>
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-semibold text-[#423b36]">
+          Used: {10 - remainingGenerations} / 10
+        </span>
+        <span className={`font-semibold ${
+          remainingGenerations === 0
+            ? 'text-[#c2411f]'
+            : 'text-[#2d7a4d]'
+        }`}>
+          Remaining: {remainingGenerations}
+        </span>
+      </div>
+
+      <div className="w-full bg-[#ede8df] rounded-full h-2 overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ${
+            remainingGenerations === 0
+              ? 'bg-[#c2411f]'
+              : remainingGenerations <= 3
+              ? 'bg-[#d48b28]'
+              : 'bg-[#2c2724]'
+          }`}
+          style={{
+            width: `${Math.min(
+              100,
+              ((10 - remainingGenerations) / 10) * 100
+            )}%`,
+          }}
+        />
+      </div>
+    </>
+  )}
+</div>
 
           {/* Blocked message if 10/10 reached */}
           {remainingGenerations <= 0 ? (
