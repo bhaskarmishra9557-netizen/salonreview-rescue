@@ -243,11 +243,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Upgrade to Pro
               </button>
             )}
-          </div>
-                </div>
-      </div>
+          <        </div>
     )}
+      </div>
 
+      {/* Recent Reviews Section */}
       {/* Recent Reviews Section */}
       <div className="bg-white rounded-xl border border-[#ded8cc] overflow-hidden shadow-xs">
         <div className="px-6 py-4 border-b border-[#ece7de] flex items-center justify-between">
