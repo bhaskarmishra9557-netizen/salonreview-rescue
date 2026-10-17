@@ -85,7 +85,24 @@ const MAX_FREE_GENERATIONS = 10;
 
   // Load User Salon Data & Review History
   const loadUserData = async (userId: string) => {
-    try {
+    try {      // Load billing status from the server so Pro access is account-based.
+      let proStatus = false;
+      const { data: billingSession } = await supabase.auth.getSession();
+
+      if (billingSession.session?.access_token) {
+        const billingResponse = await fetch('/api/billing/status', {
+          headers: {
+            Authorization: `Bearer ${billingSession.session.access_token}`,
+          },
+        });
+
+        if (billingResponse.ok) {
+          const billingData = await billingResponse.json().catch(() => ({}));
+          proStatus = Boolean(billingData?.isPro);
+        }
+      }
+
+      setIsPro(proStatus);
       // 1. Fetch Salon Profile
       const { data: salonData } = await supabase
         .from('salon_profiles')
